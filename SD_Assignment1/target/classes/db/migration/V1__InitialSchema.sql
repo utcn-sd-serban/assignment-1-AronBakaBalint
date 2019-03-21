@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS question(
+	id serial PRIMARY KEY,
+	title VARCHAR(32) NOT NULL,
+	text VARCHAR(64) NOT NULL
+	
+);
