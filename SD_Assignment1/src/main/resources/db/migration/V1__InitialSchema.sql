@@ -2,8 +2,19 @@ CREATE TABLE IF NOT EXISTS question
 (
 	id serial PRIMARY KEY,
 	title VARCHAR(32) NOT NULL,
-	text VARCHAR(64) NOT NULL
+	body VARCHAR(64) NOT NULL,
+	author VARCHAR(32) NOT NULL,
+	creationdate VARCHAR(30) NOT NULL
 	
+);
+
+CREATE TABLE IF NOT EXISTS answers
+(
+	answerid serial PRIMARY KEY,
+	author VARCHAR(32) NOT NULL,
+	questionid int NOT NULL,
+	answer VARCHAR(64) NOT NULL,
+	creationdate VARCHAR(32) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS users

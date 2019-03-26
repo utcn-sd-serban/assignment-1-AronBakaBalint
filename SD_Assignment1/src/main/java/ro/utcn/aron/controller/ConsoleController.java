@@ -14,55 +14,71 @@ import ro.utcn.aron.service.UserManagementService;
 public class ConsoleController implements CommandLineRunner {
 
 	private final Scanner scanner = new Scanner(System.in);
-
-	private  QuestionManagementService questionManagementService; //final
-
-	private  UserManagementService userManagementService; //final
-	 
-
+	
+	private final QuestionManagementService questionManagementService = new QuestionManagementService();
+	
+	private final UserManagementService userManagementService = new UserManagementService();
+	
 	@Override
 	public void run(String... args) throws Exception {
 		boolean okPassword = false;
-
+		String user = null;
+		
 		while (!okPassword) {
-			okPassword = handleUsernameAndPassword();
+			try {
+				user = handleUsernameAndPassword();
+				if(!user.equals("")) okPassword = true;
+				if(okPassword == false)
+					System.out.println("Wrong username or password");
+			} catch(Exception e) {
+				System.out.println("Wrong username or password");
+			}
+			
 		}
-
-		print("Welcome to StackOverflow!");
+		
+		print("Welcome to StackOverflow, "+user+"!");
 		boolean done = false;
 		while (!done) {
 			print("Enter command: ");
 			String command = scanner.next().trim().toLowerCase();
 
-			done = handleCommand(command);
+			done = handleCommand(command, user);
 		}
 
 	}
 
-	private boolean handleUsernameAndPassword() {
+	private String handleUsernameAndPassword() {
 		print("Enter username: ");
 		String username = scanner.next().trim();
 		print("Enter password: ");
 		String password = scanner.next().trim();
-		return userManagementService.matches(username, password);
+		if(userManagementService.matches(username, password)) return username;
+		return "";
 	}
 
-	private boolean handleCommand(String command) {
+	private boolean handleCommand(String command, String user) {
 		switch (command) {
 		case "list":
 			handleList();
 			return false;
 		case "add":
-			handleAdd();
+			handleAdd(user);
 			return false;
 		case "remove":
-			handleRemove();
+			try {
+				handleRemove();
+			} catch(RuntimeException rte) {
+				System.out.println("ID not found");
+			}
 			return false;
 		case "filterbytitle":
 			handleFilterByTitle();
 			return false;
 		case "filterbytag":
 			handleFilterByTag();
+			return false;
+		case "answer":
+			handleAnswer(user);
 			return false;
 		case "exit":
 			return true;
@@ -73,11 +89,21 @@ public class ConsoleController implements CommandLineRunner {
 	}
 
 	private void handleFilterByTag() {
-
+		System.out.println("Tag: ");
+		String tag = scanner.next();
+		List<Question> listedQuestions = questionManagementService.filterByTag(tag);
+		listedQuestions.forEach(q -> {
+			System.out.println(q);
+		});
 	}
 
 	private void handleFilterByTitle() {
-		// TODO Auto-generated method stub
+		System.out.println("Title: ");
+		String title = scanner.next();
+		List<Question> listedQuestions = questionManagementService.filterByTitle(title);
+		listedQuestions.forEach(q -> {
+			System.out.println(q);
+		});
 
 	}
 
@@ -88,14 +114,14 @@ public class ConsoleController implements CommandLineRunner {
 
 	}
 
-	private void handleAdd() {
+	private void handleAdd(String user) {
 		print("Question title: ");
 		String title = scanner.next().trim();
 		print("Text: ");
 		String text = scanner.next().trim();
 		print("Tags: ");
 		String tags = scanner.next().trim();
-		questionManagementService.save(title, text, tags);
+		questionManagementService.addQuestion(title, text, tags, user);
 	}
 
 	private void handleList() {
@@ -104,6 +130,15 @@ public class ConsoleController implements CommandLineRunner {
 			System.out.println(q);
 		});
 
+	}
+	
+	private void handleAnswer(String user) {
+		print("Question id: ");
+		int id = scanner.nextInt();
+		print("Answer: ");
+		String text = scanner.next().trim();
+		
+		questionManagementService.answerQuestion(user, id, text);
 	}
 
 	private void print(String s) {
