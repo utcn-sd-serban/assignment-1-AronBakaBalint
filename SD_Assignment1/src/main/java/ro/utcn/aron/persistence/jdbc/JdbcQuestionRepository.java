@@ -9,22 +9,18 @@ import java.util.stream.Collectors;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import ro.utcn.aron.model.Answer;
 import ro.utcn.aron.model.Question;
 import ro.utcn.aron.persistence.api.QuestionRepository;
 
+
 public class JdbcQuestionRepository implements QuestionRepository {
 
-	private static final JdbcTemplate template = new JdbcTemplate();
+	private  final JdbcTemplate template;
 
-	public JdbcQuestionRepository() {
-		DriverManagerDataSource dataSource = new DriverManagerDataSource();
-		dataSource.setUrl("jdbc:postgresql://localhost:5432/a1");
-		dataSource.setUsername("postgres");
-		dataSource.setPassword("1234");
-		template.setDataSource(dataSource);
+	public JdbcQuestionRepository(JdbcTemplate template) {
+		this.template = template;
 	}
 
 	@Override
@@ -151,5 +147,21 @@ public class JdbcQuestionRepository implements QuestionRepository {
 				(resultSet, i) -> new Answer(resultSet.getString("answer"), resultSet.getString("author"),
 						resultSet.getString("creationdate")),
 				questionid);
+	}
+
+	@Override
+	public void editQuestion(int questionid, String user, String text) {
+		List<Question> result = template.query("SELECT * FROM question WHERE id = ? and author = ?", (resultSet,
+				i) -> new Question(resultSet.getInt("id"), resultSet.getString("title"), resultSet.getString("body"),
+						list2String(getTagsFromJdbc(resultSet.getInt("id"))), resultSet.getString("author"),
+						resultSet.getString("creationdate"),getAnswersFromJdbc(resultSet.getInt("id"))), questionid, user);
+		
+		if(result.isEmpty()) {
+			System.out.println("You cannot edit other question!");
+			return;
+		}
+		
+		template.update("UPDATE question SET body = ? WHERE id = ? ",
+				text, questionid);
 	}
 }

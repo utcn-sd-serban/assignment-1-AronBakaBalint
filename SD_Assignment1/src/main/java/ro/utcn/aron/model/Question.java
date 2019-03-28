@@ -68,6 +68,30 @@ public class Question implements Comparable {
 		answers.add(answer);
 	}
 	
+	public void editAnswer(int answerid, String user, String newText) {
+		answers.forEach(answer->{
+			if(answer.getId() == answerid) {
+				if(answer.getAuthor().equals(user)) {
+					answer.setText(newText);
+				} else {
+					System.out.println("You can edit only your answer!");
+				}
+			}
+		});
+	}
+	
+	public void removeAnswer(int answerid, String user) {
+		answers.forEach(answer->{
+			if(answer.getId() == answerid) {
+				if(answer.getAuthor().equals(user)) {
+					answers.remove(answer);
+				} else {
+					System.out.println("You can delete only your answer!");
+				}
+			}
+		});
+	}
+	
 	public boolean containsTag(String tag) {
 		return tags.contains(tag);
 	}

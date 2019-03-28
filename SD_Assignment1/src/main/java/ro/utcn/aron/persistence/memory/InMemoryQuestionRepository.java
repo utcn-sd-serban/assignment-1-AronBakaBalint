@@ -71,6 +71,17 @@ public class InMemoryQuestionRepository implements QuestionRepository {
 		data.get(questionid).addAnswer(new Answer(answer, user, new Date().toString()));	
 	}
 
+	@Override
+	public void editQuestion(int questionid, String user, String text) {
+		if(!data.get(questionid).getAuthor().equals(user)) {
+			System.out.println("You can edit only your question!");
+			return;
+		}
+		
+		data.get(questionid).setBody(text);
+		
+	}
+
 	
 
 }

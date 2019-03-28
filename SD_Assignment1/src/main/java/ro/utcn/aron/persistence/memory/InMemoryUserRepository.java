@@ -5,9 +5,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.springframework.stereotype.Component;
+
 import ro.utcn.aron.model.User;
 import ro.utcn.aron.persistence.api.UserRepository;
 
+@Component
 public class InMemoryUserRepository implements UserRepository {
 
 	private static final Map<String, String> users = new ConcurrentHashMap<>();

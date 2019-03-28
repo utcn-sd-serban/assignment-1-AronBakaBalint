@@ -15,10 +15,17 @@ public class ConsoleController implements CommandLineRunner {
 
 	private final Scanner scanner = new Scanner(System.in);
 	
-	private final QuestionManagementService questionManagementService = new QuestionManagementService();
+	private final QuestionManagementService questionManagementService;
 	
-	private final UserManagementService userManagementService = new UserManagementService();
+	private final UserManagementService userManagementService;
 	
+	
+	public ConsoleController(QuestionManagementService questionManagementService,UserManagementService userManagementService) {
+		super();
+		this.questionManagementService = questionManagementService;
+		this.userManagementService = userManagementService;
+	}
+
 	@Override
 	public void run(String... args) throws Exception {
 		boolean okPassword = false;
@@ -80,6 +87,9 @@ public class ConsoleController implements CommandLineRunner {
 		case "answer":
 			handleAnswer(user);
 			return false;
+		case "editquestion":
+			handleEditQuestion(user);
+			return false;
 		case "exit":
 			return true;
 		default:
@@ -116,11 +126,12 @@ public class ConsoleController implements CommandLineRunner {
 
 	private void handleAdd(String user) {
 		print("Question title: ");
-		String title = scanner.next().trim();
+		scanner.nextLine();
+		String title = scanner.nextLine();
 		print("Text: ");
-		String text = scanner.next().trim();
+		String text = scanner.nextLine();
 		print("Tags: ");
-		String tags = scanner.next().trim();
+		String tags = scanner.nextLine();
 		questionManagementService.addQuestion(title, text, tags, user);
 	}
 
@@ -139,6 +150,16 @@ public class ConsoleController implements CommandLineRunner {
 		String text = scanner.next().trim();
 		
 		questionManagementService.answerQuestion(user, id, text);
+	}
+	
+	private void handleEditQuestion(String user) {
+		print("Question id: ");
+		int id = scanner.nextInt();
+		print("Text: ");
+		scanner.next();
+		String text = scanner.nextLine().trim();
+		
+		questionManagementService.editQuestion(user, id, text);
 	}
 
 	private void print(String s) {

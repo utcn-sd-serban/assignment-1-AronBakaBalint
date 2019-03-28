@@ -3,25 +3,21 @@ package ro.utcn.aron.service;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import ro.utcn.aron.mode.RepositoryMode;
 import ro.utcn.aron.model.Question;
 import ro.utcn.aron.persistence.api.QuestionRepository;
-import ro.utcn.aron.persistence.api.QuestionRepositoryFactory;
-import ro.utcn.aron.persistence.jdbc.JdbcQuestionRepositoryFactory;
-import ro.utcn.aron.persistence.memory.InMemoryQuestionRepositoryFactory;
+import ro.utcn.aron.persistence.api.RepositoryFactory;
 
+@Component
 public class QuestionManagementService {
 
-	private final QuestionRepositoryFactory questionRepositoryFactory;
+	private final RepositoryFactory questionRepositoryFactory;
 	
-	public QuestionManagementService() {
+	public QuestionManagementService(RepositoryFactory questionRepositoryFactory) {
 		
-		if(RepositoryMode.repoMode.equals("JDBC"))
-			questionRepositoryFactory = new JdbcQuestionRepositoryFactory();
-		else
-			questionRepositoryFactory = new InMemoryQuestionRepositoryFactory();
+		this.questionRepositoryFactory = questionRepositoryFactory;
 	}
 	
 	@Transactional
@@ -57,5 +53,11 @@ public class QuestionManagementService {
 	public void answerQuestion(String user, int questionid, String answer) {
 		QuestionRepository repository = questionRepositoryFactory.createQuestionRepository();
 		repository.answerQuestion(questionid, user, answer);
+	}
+	
+	@Transactional
+	public void editQuestion(String user, int questionid, String answer) {
+		QuestionRepository repository = questionRepositoryFactory.createQuestionRepository();
+		repository.editQuestion(questionid, user, answer);
 	}
 }

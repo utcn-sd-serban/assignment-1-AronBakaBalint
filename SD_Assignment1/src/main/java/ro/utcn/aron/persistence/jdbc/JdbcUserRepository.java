@@ -6,21 +6,18 @@ import java.util.Map;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.stereotype.Component;
 
 import ro.utcn.aron.model.User;
 import ro.utcn.aron.persistence.api.UserRepository;
 
+@Component
 public class JdbcUserRepository implements UserRepository{
 
-	private static final JdbcTemplate template = new JdbcTemplate();
+	private  final JdbcTemplate template;
 
-	public JdbcUserRepository() {
-		DriverManagerDataSource dataSource = new DriverManagerDataSource();
-		dataSource.setUrl("jdbc:postgresql://localhost:5432/a1");
-		dataSource.setUsername("postgres");
-		dataSource.setPassword("1234");
-		template.setDataSource(dataSource);
+	public JdbcUserRepository(JdbcTemplate template) {
+		this.template = template;
 	}
 	
 	@Override

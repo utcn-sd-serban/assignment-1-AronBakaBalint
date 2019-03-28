@@ -2,6 +2,7 @@ package ro.utcn.aron.model;
 
 public class Answer {
 
+	private int id;
 	private String text;
 	private String author;
 	private String creationDate;
@@ -35,7 +36,15 @@ public class Answer {
 	public void setCreationDate(String creationDate) {
 		this.creationDate = creationDate;
 	}
-	
+		
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
 	@Override
 	public String toString() {
 		String txt = "";

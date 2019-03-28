@@ -11,6 +11,8 @@ public interface QuestionRepository {
 	
 	Optional<Question> findById(int id);
 	
+	void editQuestion(int questionid, String user, String text);
+	
 	void remove(Question question);
 	
 	void answerQuestion(int questionid, String user, String answer);
