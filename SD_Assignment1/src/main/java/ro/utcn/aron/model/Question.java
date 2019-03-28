@@ -6,6 +6,7 @@ import java.util.List;
 public class Question implements Comparable {
 
 	private int id;
+	private int score = 0;
 	private String title;
 	private String body;
 	private String tags;
@@ -143,6 +144,14 @@ public class Question implements Comparable {
 		if(id > q2.getId()) return 1;
 		if(id < q2.getId()) return -1;
 		return 0;
+	}
+	
+	public void upVote() {
+		score++;
+	}
+	
+	public void downVote() {
+		score--;
 	}
 	
 	

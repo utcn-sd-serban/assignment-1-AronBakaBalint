@@ -14,7 +14,8 @@ CREATE TABLE IF NOT EXISTS answers
 	author VARCHAR(32) NOT NULL,
 	questionid int NOT NULL,
 	answer VARCHAR(64) NOT NULL,
-	creationdate VARCHAR(32) NOT NULL
+	creationdate VARCHAR(32) NOT NULL,
+	score int
 );
 
 CREATE TABLE IF NOT EXISTS users

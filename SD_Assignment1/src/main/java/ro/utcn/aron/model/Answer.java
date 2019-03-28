@@ -3,6 +3,7 @@ package ro.utcn.aron.model;
 public class Answer {
 
 	private int id;
+	private int score = 0;
 	private String text;
 	private String author;
 	private String creationDate;
@@ -61,6 +62,14 @@ public class Answer {
 		txt += creationDate+"\n";
 		
 		return txt;
+	}
+	
+	public void upVote() {
+		score++;
+	}
+	
+	public void downVote() {
+		score--;
 	}
 	
 }

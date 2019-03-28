@@ -1,6 +1,7 @@
 package ro.utcn.aronTest;
 
-import java.util.List;
+import static org.junit.Assert.assertEquals;
+
 import java.util.stream.Collectors;
 
 import org.junit.Test;
@@ -9,7 +10,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import ro.utcn.aron.model.Answer;
 import ro.utcn.aron.persistence.api.RepositoryFactory;
 import ro.utcn.aron.persistence.memory.InMemoryRepositoryFactory;
 import ro.utcn.aron.persistence.memory.InMemoryUserRepository;
@@ -29,7 +29,7 @@ public class SdAssignment1ApplicationTests {
 		questionManagementService.addQuestion("Save Question Test", "I'm testing save question method", "test,memory",
 				"Paul");
 
-		assert questionManagementService.listQuestions().size() == 1;
+		assertEquals( questionManagementService.listQuestions().size() , 1);
 	}
 
 	@Test
@@ -37,7 +37,7 @@ public class SdAssignment1ApplicationTests {
 		UserManagementService userManagementService = new UserManagementService(memRepositoryFactory);
 		userManagementService.save("Rose", "abc123");
 
-		assert userManagementService.matches("Rose", "abc123");
+		assertEquals( userManagementService.matches("Rose", "abc123"), true);
 	}
 
 	@Test
@@ -47,7 +47,7 @@ public class SdAssignment1ApplicationTests {
 				"Paul");
 		questionManagementService.answerQuestion("Cait", 1, "It was ok");
 
-		assert questionManagementService.listQuestions().stream().mapToInt(q -> q.getAnswers().size()).sum() == 1;
+		assertEquals( questionManagementService.listQuestions().stream().mapToInt(q -> q.getAnswers().size()).sum() , 1);
 	}
 
 	@Test
@@ -58,7 +58,7 @@ public class SdAssignment1ApplicationTests {
 		questionManagementService.answerQuestion("Cait", 1, "It was ok");
 		questionManagementService.deleteAnswer("Cait", 1);
 
-		assert questionManagementService.listQuestions().stream().mapToInt(q -> q.getAnswers().size()).sum() == 0;
+		assertEquals( questionManagementService.listQuestions().stream().mapToInt(q -> q.getAnswers().size()).sum() , 0);
 	}
 
 	@Test
@@ -69,21 +69,30 @@ public class SdAssignment1ApplicationTests {
 		questionManagementService.answerQuestion("Cait", 1, "It was ok");
 		questionManagementService.deleteAnswer("John", 1);
 
-		assert questionManagementService.listQuestions().stream().mapToInt(q -> q.getAnswers().size()).sum() == 1;
+		assertEquals( questionManagementService.listQuestions().stream().mapToInt(q -> q.getAnswers().size()).sum() , 1);
 	}
 
 	@Test
-	public void testEditAnswer() { // when the answer does not belong to the user
+	public void testEditAnswer() { 
 		QuestionManagementService questionManagementService = new QuestionManagementService(memRepositoryFactory);
 		questionManagementService.addQuestion("Save Question Test", "I'm testing save question method", "test,memory",
 				"Paul");
 		questionManagementService.answerQuestion("Cait", 1, "It was ok");
 		questionManagementService.editAnswer("Cait", 1, "Edited answer");
 
-		assert questionManagementService.listQuestions().stream().filter(q -> q.getId() == 1)
+		assertEquals( questionManagementService.listQuestions().stream().filter(q -> q.getId() == 1)
 				.collect(Collectors.toList()).get(0).getAnswers().stream().filter(a -> a.getId() == 1)
-				.collect(Collectors.toList()).get(0).getText().equals("Edited answer");
+				.collect(Collectors.toList()).get(0).getText(), "Edited answer");
 
 	}
+	
+	@Test
+	public void testFilterByTag() { 
+		QuestionManagementService questionManagementService = new QuestionManagementService(memRepositoryFactory);
+		questionManagementService.addQuestion("Save Question Test", "I'm testing save question method", "test,memory",
+				"Paul");
 
+		assertEquals( questionManagementService.filterByTag("mem").size(), 1);
+
+	}
 }
