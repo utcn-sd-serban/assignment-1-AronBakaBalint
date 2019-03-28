@@ -8,7 +8,7 @@ public interface UserRepository {
 
 	boolean matches(String username, String password);
 	
-	void save(String name, String password);
+	void save(String username, String password);
 	
 	List<User> findAll();
 }

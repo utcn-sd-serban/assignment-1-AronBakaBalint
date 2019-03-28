@@ -19,9 +19,9 @@ import ro.utcn.aron.persistence.api.QuestionRepository;
 @Component
 public class InMemoryQuestionRepository implements QuestionRepository {
 
-	private static final Map <Integer, Question> data = new ConcurrentHashMap<>();
-	private static AtomicInteger currentQuestionId = new AtomicInteger(0);
-	private static AtomicInteger currentAnswerId = new AtomicInteger(0);
+	private  final Map <Integer, Question> data = new ConcurrentHashMap<>();
+	private  AtomicInteger currentQuestionId = new AtomicInteger(0);
+	private  AtomicInteger currentAnswerId = new AtomicInteger(0);
 	
 	
 	@Override
@@ -101,7 +101,6 @@ public class InMemoryQuestionRepository implements QuestionRepository {
 		});
 		
 	}
-
-	
+		
 
 }

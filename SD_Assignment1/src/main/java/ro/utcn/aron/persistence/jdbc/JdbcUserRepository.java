@@ -29,13 +29,13 @@ public class JdbcUserRepository implements UserRepository{
 	}
 
 	@Override
-	public void save(String name, String password) {
+	public void save(String username, String password) {
 		SimpleJdbcInsert insert = new SimpleJdbcInsert(template);
 		insert.setTableName("users");
 		insert.setGeneratedKeyName("id");
 		
 		Map<String, String> data = new HashMap<>();
-		data.put("username", name);
+		data.put("username", username);
 		data.put("password", password);
 		
 		insert.execute(data);
