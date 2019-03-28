@@ -30,25 +30,31 @@ public class ConsoleController implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 		boolean okPassword = false;
 		String user = null;
+		boolean done = false;
+		boolean loggedIn = false;
 		
-		while (!okPassword) {
-			try {
-				user = handleUsernameAndPassword();
-				if(!user.equals("")) okPassword = true;
-				if(okPassword == false)
+		while(!done) {
+			
+			if(!loggedIn)
+			while (!okPassword) {
+				try {
+					user = handleUsernameAndPassword();
+					if(!user.equals("")) okPassword = true;
+					if(okPassword == false)
+						System.out.println("Wrong username or password");
+				} catch(Exception e) {
 					System.out.println("Wrong username or password");
-			} catch(Exception e) {
-				System.out.println("Wrong username or password");
+				}
+				print("Welcome to StackOverflow, "+user+"!");
 			}
 			
-		}
-		
-		print("Welcome to StackOverflow, "+user+"!");
-		boolean done = false;
-		while (!done) {
 			print("Enter command: ");
 			String command = scanner.next().trim().toLowerCase();
-
+			if(command.equalsIgnoreCase("logoff")) {
+				done = false;
+				loggedIn = false;
+				okPassword = false;
+			} else
 			done = handleCommand(command, user);
 		}
 
@@ -72,11 +78,7 @@ public class ConsoleController implements CommandLineRunner {
 			handleAdd(user);
 			return false;
 		case "remove":
-			try {
-				handleRemove();
-			} catch(RuntimeException rte) {
-				System.out.println("ID not found");
-			}
+			handleRemove();
 			return false;
 		case "filterbytitle":
 			handleFilterByTitle();
@@ -89,6 +91,12 @@ public class ConsoleController implements CommandLineRunner {
 			return false;
 		case "editquestion":
 			handleEditQuestion(user);
+			return false;
+		case "deleteanswer":
+			handleDeleteAnswer(user);
+			return false;
+		case "editanswer":
+			handleEditAnswer(user);
 			return false;
 		case "exit":
 			return true;
@@ -118,10 +126,13 @@ public class ConsoleController implements CommandLineRunner {
 	}
 
 	private void handleRemove() {
-		print("Question id = ");
-		int id = scanner.nextInt();
-		questionManagementService.removeQuestion(id);
-
+		try{
+			print("Question id = ");
+			int id = scanner.nextInt();
+			questionManagementService.removeQuestion(id);
+		} catch (Exception e) {
+			System.out.println("No question with given ID found!");
+		}
 	}
 
 	private void handleAdd(String user) {
@@ -147,7 +158,8 @@ public class ConsoleController implements CommandLineRunner {
 		print("Question id: ");
 		int id = scanner.nextInt();
 		print("Answer: ");
-		String text = scanner.next().trim();
+		scanner.nextLine();
+		String text = scanner.nextLine().trim();
 		
 		questionManagementService.answerQuestion(user, id, text);
 	}
@@ -156,10 +168,27 @@ public class ConsoleController implements CommandLineRunner {
 		print("Question id: ");
 		int id = scanner.nextInt();
 		print("Text: ");
-		scanner.next();
+		scanner.nextLine();
 		String text = scanner.nextLine().trim();
 		
 		questionManagementService.editQuestion(user, id, text);
+	}
+	
+	private void handleDeleteAnswer(String user) {
+		print("Answer id: ");
+		int id = scanner.nextInt();
+		
+		questionManagementService.deleteAnswer(user, id);
+	}
+	
+	private void handleEditAnswer(String user) {
+		print("Answer id: ");
+		int id = scanner.nextInt();
+		print("Text: ");
+		scanner.nextLine();
+		String text = scanner.nextLine().trim();
+		
+		questionManagementService.editAnswer(user, id, text);
 	}
 
 	private void print(String s) {

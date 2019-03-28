@@ -80,16 +80,17 @@ public class Question implements Comparable {
 		});
 	}
 	
-	public void removeAnswer(int answerid, String user) {
-		answers.forEach(answer->{
-			if(answer.getId() == answerid) {
-				if(answer.getAuthor().equals(user)) {
-					answers.remove(answer);
+	public  void removeAnswer(int answerid, String user) {
+		for(int i=0;i < answers.size(); i++) {
+			if(answers.get(i).getId() == answerid) {
+				if(answers.get(i).getAuthor().equals(user)) {
+					answers.remove(answers.get(i));
+					return;
 				} else {
 					System.out.println("You can delete only your answer!");
 				}
 			}
-		});
+		};
 	}
 	
 	public boolean containsTag(String tag) {

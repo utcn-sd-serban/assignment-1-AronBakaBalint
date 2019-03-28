@@ -12,6 +12,13 @@ public class Answer {
 		this.author = author;
 		this.creationDate = creationDate;
 	}
+	
+	public Answer(int id, String text, String author, String creationDate) {
+		this.id = id;
+		this.text = text;
+		this.author = author;
+		this.creationDate = creationDate;
+	}
 
 	public String getText() {
 		return text;
@@ -48,11 +55,11 @@ public class Answer {
 	@Override
 	public String toString() {
 		String txt = "";
+		txt += id+"\n";
 		txt += text+"\n";
 		txt += author+"\n";
 		txt += creationDate+"\n";
 		
-		txt += "\n";
 		return txt;
 	}
 	

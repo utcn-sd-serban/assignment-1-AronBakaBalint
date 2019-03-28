@@ -60,4 +60,16 @@ public class QuestionManagementService {
 		QuestionRepository repository = questionRepositoryFactory.createQuestionRepository();
 		repository.editQuestion(questionid, user, answer);
 	}
+	
+	@Transactional
+	public void editAnswer(String user, int answerid, String answer) {
+		QuestionRepository repository = questionRepositoryFactory.createQuestionRepository();
+		repository.editAnswer(answerid, user, answer);
+	}
+	
+	@Transactional
+	public void deleteAnswer(String user, int answerid) {
+		QuestionRepository repository = questionRepositoryFactory.createQuestionRepository();
+		repository.removeAnswer(answerid, user);
+	}
 }

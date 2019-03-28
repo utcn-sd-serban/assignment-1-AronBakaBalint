@@ -144,7 +144,7 @@ public class JdbcQuestionRepository implements QuestionRepository {
 
 	private List<Answer> getAnswersFromJdbc(int questionid) {
 		return template.query("SELECT * FROM answers WHERE questionid = ?",
-				(resultSet, i) -> new Answer(resultSet.getString("answer"), resultSet.getString("author"),
+				(resultSet, i) -> new Answer(resultSet.getInt("answerid"),resultSet.getString("answer"), resultSet.getString("author"),
 						resultSet.getString("creationdate")),
 				questionid);
 	}
@@ -163,5 +163,37 @@ public class JdbcQuestionRepository implements QuestionRepository {
 		
 		template.update("UPDATE question SET body = ? WHERE id = ? ",
 				text, questionid);
+	}
+
+	@Override
+	public void removeAnswer(int answerid, String user) {
+		List<Answer> result = template.query("SELECT * FROM answers WHERE answerid = ? and author = ?", (resultSet,
+				i) -> new Answer(resultSet.getInt("answerid"), resultSet.getString("author"),
+						 resultSet.getString("answer"),
+						resultSet.getString("creationdate")), answerid, user);
+		
+		if(result.isEmpty()) {
+			System.out.println("You can delete your answer only!");
+			return;
+		}
+		
+		template.update("DELETE FROM answers WHERE answerid = ? ",answerid);
+	}
+
+	@Override
+	public void editAnswer(int answerid, String user, String newText) {
+		List<Answer> result = template.query("SELECT * FROM answers WHERE answerid = ? and author = ?", (resultSet,
+				i) -> new Answer(resultSet.getInt("answerid"), resultSet.getString("author"),
+						 resultSet.getString("answer"),
+						resultSet.getString("creationdate")), answerid, user);
+		
+		if(result.isEmpty()) {
+			System.out.println("You can edit your answer only!");
+			return;
+		}
+		
+		template.update("UPDATE answers SET answer = ? WHERE answerid = ? ",
+				newText, answerid);
+		
 	}
 }

@@ -17,6 +17,10 @@ public interface QuestionRepository {
 	
 	void answerQuestion(int questionid, String user, String answer);
 	
+	void removeAnswer(int answerid, String user);
+	
+	void editAnswer(int answerid, String user, String newText);
+	
 	List<Question> findAll();
 	
 	List<Question> filterByTitle(String title);

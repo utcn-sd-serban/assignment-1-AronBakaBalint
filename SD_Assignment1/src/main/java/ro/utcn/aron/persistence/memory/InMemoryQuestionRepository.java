@@ -20,7 +20,8 @@ import ro.utcn.aron.persistence.api.QuestionRepository;
 public class InMemoryQuestionRepository implements QuestionRepository {
 
 	private static final Map <Integer, Question> data = new ConcurrentHashMap<>();
-	private static AtomicInteger currentId = new AtomicInteger(0);
+	private static AtomicInteger currentQuestionId = new AtomicInteger(0);
+	private static AtomicInteger currentAnswerId = new AtomicInteger(0);
 	
 	
 	@Override
@@ -28,9 +29,9 @@ public class InMemoryQuestionRepository implements QuestionRepository {
 		if(question.getId() != 0) {
 			data.put(question.getId(), question);
 		} else {
-			currentId.getAndIncrement();
-			question.setId(currentId.intValue());
-			data.put(currentId.intValue(), question);
+			currentQuestionId.getAndIncrement();
+			question.setId(currentQuestionId.intValue());
+			data.put(currentQuestionId.intValue(), question);
 		}
 		
 		return question;
@@ -67,8 +68,11 @@ public class InMemoryQuestionRepository implements QuestionRepository {
 	}
 
 	@Override
-	public void answerQuestion(int questionid, String user, String answer) {
-		data.get(questionid).addAnswer(new Answer(answer, user, new Date().toString()));	
+	public void answerQuestion(int questionid, String user, String answerText) {
+		Answer answer = new Answer(answerText, user, new Date().toString());
+		currentAnswerId.getAndIncrement();
+		answer.setId(currentAnswerId.intValue());
+		data.get(questionid).addAnswer(answer);	
 	}
 
 	@Override
@@ -79,6 +83,22 @@ public class InMemoryQuestionRepository implements QuestionRepository {
 		}
 		
 		data.get(questionid).setBody(text);
+		
+	}
+
+	@Override
+	public synchronized void removeAnswer(int answerid, String user) {
+		data.forEach((K, V)->{
+			V.removeAnswer(answerid, user);
+		});
+		
+	}
+
+	@Override
+	public void editAnswer(int answerid, String user, String newText) {
+		data.forEach((K, V)->{
+			V.editAnswer(answerid, user, newText);
+		});
 		
 	}
 
