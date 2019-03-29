@@ -31,8 +31,7 @@ CREATE TABLE IF NOT EXISTS qvotes
 	voteid serial PRIMARY KEY,
 	questionid int NOT NULL,
 	author VARCHAR(32) NOT NULL,
-	score int,
-	vote_type int
+	votetype int
 );
 
 CREATE TABLE IF NOT EXISTS avotes
@@ -40,8 +39,7 @@ CREATE TABLE IF NOT EXISTS avotes
 	voteid serial PRIMARY KEY,
 	answerid int NOT NULL,
 	author VARCHAR(32) NOT NULL,
-	score int,
-	vote_type int
+	votetype int
 );
 
 CREATE TABLE IF NOT EXISTS tags

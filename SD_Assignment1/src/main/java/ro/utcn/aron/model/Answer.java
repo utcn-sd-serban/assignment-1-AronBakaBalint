@@ -27,6 +27,14 @@ public class Answer implements Comparable {
 		this.creationDate = creationDate;
 	}
 
+	public Answer(int id, String text, String author, String creationDate, int score) {
+		this.id = id;
+		this.text = text;
+		this.author = author;
+		this.creationDate = creationDate;
+		this.score = score;
+	}
+	
 	public String getText() {
 		return text;
 	}

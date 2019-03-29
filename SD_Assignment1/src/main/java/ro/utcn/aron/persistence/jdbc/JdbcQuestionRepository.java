@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 
 import ro.utcn.aron.model.Answer;
 import ro.utcn.aron.model.Question;
+import ro.utcn.aron.model.Vote;
 import ro.utcn.aron.persistence.api.QuestionRepository;
 
 
@@ -199,25 +200,198 @@ public class JdbcQuestionRepository implements QuestionRepository {
 
 	@Override
 	public void upVoteAnswer(String username, int answerid) {
-		// TODO Auto-generated method stub
+		
+		if(ownAnswer(username, answerid)) {
+			System.out.println("You cannot vote your own answer!");
+			return;
+		}
+		
+		if(alreadyUpvotedAnswer(username, answerid)) {
+			System.out.println("You already upvoted this answer!");
+			return;
+		}
+		
+		if(alreadyDownvotedAnswer(username, answerid)) {
+			template.update("UPDATE avotes SET votetype = 1 WHERE answerid = ? ", answerid);
+			return;
+		}
+		
+		//if it was not already voted we will insert the new vote
+		SimpleJdbcInsert insert = new SimpleJdbcInsert(template);
+		insert.setTableName("avotes");
+		insert.setGeneratedKeyName("voteid");
+
+		Map<String, Object> data = new HashMap<>();
+		data.put("answerid", answerid);
+		data.put("author", username);
+		data.put("votetype", 1);
+
+		insert.execute(data);
 		
 	}
 
 	@Override
 	public void downVoteAnswer(String username, int answerid) {
-		// TODO Auto-generated method stub
 		
+		if(ownAnswer(username, answerid)) {
+			System.out.println("You cannot vote your own answer!");
+			return;
+		}
+			
+		if(alreadyDownvotedAnswer(username, answerid)) {
+			System.out.println("You already downvoted this answer!");
+			return;
+		}
+		
+		if(alreadyUpvotedAnswer(username, answerid)) {
+			template.update("UPDATE avotes SET votetype = -1 WHERE answerid = ? ", answerid);
+			return;
+		}
+		
+		//if it was not already voted we will insert the new vote
+		SimpleJdbcInsert insert = new SimpleJdbcInsert(template);
+		insert.setTableName("avotes");
+		insert.setGeneratedKeyName("voteid");
+
+		Map<String, Object> data = new HashMap<>();
+		data.put("answerid", answerid);
+		data.put("author", username);
+		data.put("votetype", -1);
+
+		insert.execute(data);
 	}
 
 	@Override
-	public void upVoteQuestion(String username, int answerid) {
-		// TODO Auto-generated method stub
+	public void upVoteQuestion(String username, int questionid) {
+		if(ownQuestion(username, questionid)) {
+			System.out.println("You cannot vote your own question!");
+			return;
+		}
+			
+		if(alreadyUpvotedQuestion(username, questionid)) {
+			System.out.println("You already upvoted this question!");
+			return;
+		}
 		
+		if(alreadyDownvotedQuestion(username, questionid)) {
+			template.update("UPDATE qvotes SET votetype = 1 WHERE questionid = ? ", questionid);
+			return;
+		}
+		
+		//if it was not already voted we will insert the new vote
+		SimpleJdbcInsert insert = new SimpleJdbcInsert(template);
+		insert.setTableName("qvotes");
+		insert.setGeneratedKeyName("voteid");
+
+		Map<String, Object> data = new HashMap<>();
+		data.put("questionid", questionid);
+		data.put("author", username);
+		data.put("votetype", 1);
+
+		insert.execute(data);
 	}
 
 	@Override
-	public void downVoteQuestion(String username, int answerid) {
-		// TODO Auto-generated method stub
+	public void downVoteQuestion(String username, int questionid) {
+		if(ownQuestion(username, questionid)) {
+			System.out.println("You cannot vote your own question!");
+			return;
+		}
+			
+		if(alreadyDownvotedQuestion(username, questionid)) {
+			System.out.println("You already downvoted this question!");
+			return;
+		}
+		
+		if(alreadyUpvotedQuestion(username, questionid)) {
+			template.update("UPDATE qvotes SET votetype = -1 WHERE questionid = ? ", questionid);
+			return;
+		}
+		
+		//if it was not already voted we will insert the new vote
+		SimpleJdbcInsert insert = new SimpleJdbcInsert(template);
+		insert.setTableName("qvotes");
+		insert.setGeneratedKeyName("voteid");
+
+		Map<String, Object> data = new HashMap<>();
+		data.put("questionid", questionid);
+		data.put("author", username);
+		data.put("votetype", -1);
+
+		insert.execute(data);
 		
 	}
+	
+	private boolean alreadyUpvotedAnswer(String username, int answerid) {
+		List<Vote> voteList = template.query("SELECT * FROM avotes WHERE answerid = ? and author = ?", (resultSet,
+				i) -> new Vote(resultSet.getString("author"),
+						 resultSet.getInt("answerid"),
+						resultSet.getInt("votetype")), answerid, username);
+		
+		if(voteList.isEmpty()) return false;
+		
+		if(voteList.get(0).getVoteYype() > 0) return true;
+		
+		return false;
+	
+	}
+	
+	private boolean alreadyDownvotedAnswer(String username, int answerid) {
+		List<Vote> voteList = template.query("SELECT * FROM avotes WHERE answerid = ? and author = ?", (resultSet,
+				i) -> new Vote(resultSet.getString("author"),
+						 resultSet.getInt("answerid"),
+						resultSet.getInt("votetype")), answerid, username);
+		
+		if(voteList.isEmpty()) return false;
+		
+		if(voteList.get(0).getVoteYype() < 0) return true;
+		
+		return false;
+	}
+	
+	private boolean ownAnswer(String username, int answerid) {
+		List<Answer> result = template.query("SELECT * FROM answers WHERE answerid = ? and author = ?", (resultSet,
+				i) -> new Answer(resultSet.getInt("answerid"), resultSet.getString("author"),
+						 resultSet.getString("answer"),
+						resultSet.getString("creationdate")), answerid, username);
+		
+		return !result.isEmpty();
+	}
+	
+	private boolean alreadyUpvotedQuestion(String username, int questionid) {
+		List<Vote> voteList = template.query("SELECT * FROM qvotes WHERE questionid = ? and author = ?", (resultSet,
+				i) -> new Vote(resultSet.getString("author"),
+						 resultSet.getInt("questionid"),
+						resultSet.getInt("votetype")), questionid, username);
+		
+		if(voteList.isEmpty()) return false;
+		
+		if(voteList.get(0).getVoteYype() > 0) return true;
+		
+		return false;
+	
+	}
+	
+	private boolean alreadyDownvotedQuestion(String username, int questionid) {
+		List<Vote> voteList = template.query("SELECT * FROM qvotes WHERE questionid = ? and author = ?", (resultSet,
+				i) -> new Vote(resultSet.getString("author"),
+						 resultSet.getInt("questionid"),
+						resultSet.getInt("votetype")), questionid, username);
+		
+		if(voteList.isEmpty()) return false;
+		
+		if(voteList.get(0).getVoteYype() < 0) return true;
+		
+		return false;
+	}
+	
+	private boolean ownQuestion(String username, int questionid) {
+		List<Question> result = template.query("SELECT * FROM question WHERE id = ? and author = ?", (resultSet,
+				i) -> new Question(resultSet.getInt("id"), resultSet.getString("title"), resultSet.getString("body"),
+						list2String(getTagsFromJdbc(resultSet.getInt("id"))), resultSet.getString("author"),
+						resultSet.getString("creationdate"),getAnswersFromJdbc(resultSet.getInt("id"))), questionid, username);
+		
+		return !result.isEmpty();
+	}
+	
 }

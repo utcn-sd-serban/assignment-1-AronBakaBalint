@@ -29,6 +29,17 @@ public class Question implements Comparable {
 		this.creationDate = creationDate;
 	}
 	
+	public Question(int id, String title, String body, String tags, String author, String creationDate, List<Answer> answers, int score) {
+		this.id = id;
+		this.title = title;
+		this.body = body;
+		this.tags = tags;
+		this.author = author;
+		this.creationDate = creationDate;
+		this.answers = answers;
+		this.score = score;
+	}
+	
 	public Question(int id, String title, String body, String tags, String author, String creationDate, List<Answer> answers) {
 		this.id = id;
 		this.title = title;
