@@ -56,7 +56,7 @@ public class JdbcQuestionRepository implements QuestionRepository {
 		return template.query("SELECT * FROM question", (resultSet,
 				i) -> new Question(resultSet.getInt("id"), resultSet.getString("title"), resultSet.getString("body"),
 						list2String(getTagsFromJdbc(resultSet.getInt("id"))), resultSet.getString("author"),
-						resultSet.getString("creationdate"),getAnswersFromJdbc(resultSet.getInt("id"))));
+						resultSet.getString("creationdate"),getAnswersFromJdbc(resultSet.getInt("id")), getQuestionScore(resultSet.getInt("id"))));
 	}
 
 	private int insert(Question question) {
@@ -99,7 +99,7 @@ public class JdbcQuestionRepository implements QuestionRepository {
 				.query("SELECT * FROM question",
 						(resultSet, i) -> new Question(resultSet.getInt("id"), resultSet.getString("title"),
 								resultSet.getString("body"), list2String(getTagsFromJdbc(resultSet.getInt("id"))),
-								resultSet.getString("author"), resultSet.getString("creationdate"),getAnswersFromJdbc(resultSet.getInt("id"))))
+								resultSet.getString("author"), resultSet.getString("creationdate"),getAnswersFromJdbc(resultSet.getInt("id")), getQuestionScore(resultSet.getInt("id"))))
 				.stream().filter(q -> q.getTitle().contains(title)).collect(Collectors.toList());
 	}
 
@@ -110,7 +110,7 @@ public class JdbcQuestionRepository implements QuestionRepository {
 						+ "%'",
 				(resultSet, i) -> new Question(resultSet.getInt("id"), resultSet.getString("title"),
 						resultSet.getString("body"), list2String(getTagsFromJdbc(resultSet.getInt("id"))),
-						resultSet.getString("author"), resultSet.getString("author"),getAnswersFromJdbc(resultSet.getInt("id"))));
+						resultSet.getString("author"), resultSet.getString("author"),getAnswersFromJdbc(resultSet.getInt("id")), getQuestionScore(resultSet.getInt("id"))));
 	}
 
 	private List<String> getTagsFromJdbc(int questionId) {
@@ -146,8 +146,20 @@ public class JdbcQuestionRepository implements QuestionRepository {
 	private List<Answer> getAnswersFromJdbc(int questionid) {
 		return template.query("SELECT * FROM answers WHERE questionid = ?",
 				(resultSet, i) -> new Answer(resultSet.getInt("answerid"),resultSet.getString("answer"), resultSet.getString("author"),
-						resultSet.getString("creationdate")),
+						resultSet.getString("creationdate"), getAnswerScore(resultSet.getInt("answerid")) ),
 				questionid);
+	}
+	
+	private int getAnswerScore(int answerid) {
+		return template.query("SELECT * FROM avotes WHERE answerid = ?",
+				(resultSet, i) -> new Vote(resultSet.getString("author"), resultSet.getInt("voteid"), resultSet.getInt("votetype")),
+				answerid).stream().mapToInt(vote->vote.getVoteYype()).sum();
+	}
+	
+	private int getQuestionScore(int questionid) {
+		return template.query("SELECT * FROM qvotes WHERE questionid = ?",
+				(resultSet, i) -> new Vote(resultSet.getString("author"), resultSet.getInt("voteid"), resultSet.getInt("votetype")),
+				questionid).stream().mapToInt(vote->vote.getVoteYype()).sum();
 	}
 
 	@Override
