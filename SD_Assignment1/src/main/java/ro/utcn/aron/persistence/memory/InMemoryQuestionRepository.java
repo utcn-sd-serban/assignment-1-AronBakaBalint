@@ -101,6 +101,30 @@ public class InMemoryQuestionRepository implements QuestionRepository {
 		});
 		
 	}
+
+	@Override
+	public void upVoteAnswer(String username, int answerid) {
+		data.values().forEach(question->question.upVoteAnswer(username, answerid));
+		
+	}
+
+	@Override
+	public void downVoteAnswer(String username, int answerid) {
+		data.values().forEach(question->question.downVoteAnswer(username, answerid));
+		
+	}
+
+	@Override
+	public void upVoteQuestion(String username, int questionid) {
+		data.get(questionid).upVote(username);
+		
+	}
+
+	@Override
+	public void downVoteQuestion(String username, int answerid) {
+		data.get(answerid).downVote(username);
+		
+	}
 		
 
 }

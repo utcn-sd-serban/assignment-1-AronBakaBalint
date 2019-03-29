@@ -72,4 +72,28 @@ public class QuestionManagementService {
 		QuestionRepository repository = questionRepositoryFactory.createQuestionRepository();
 		repository.removeAnswer(answerid, user);
 	}
+	
+	@Transactional
+	public void upVoteAnswer(String user, int answerid) {
+		QuestionRepository repository = questionRepositoryFactory.createQuestionRepository();
+		repository.upVoteAnswer(user, answerid);
+	}
+	
+	@Transactional
+	public void downVoteAnswer(String user, int answerid) {
+		QuestionRepository repository = questionRepositoryFactory.createQuestionRepository();
+		repository.downVoteAnswer(user, answerid);
+	}
+	
+	@Transactional
+	public void upVoteQuestion(String user, int questionid) {
+		QuestionRepository repository = questionRepositoryFactory.createQuestionRepository();
+		repository.upVoteQuestion(user, questionid);
+	}
+	
+	@Transactional
+	public void downVoteQuestion(String user, int questionid) {
+		QuestionRepository repository = questionRepositoryFactory.createQuestionRepository();
+		repository.downVoteQuestion(user, questionid);
+	}
 }

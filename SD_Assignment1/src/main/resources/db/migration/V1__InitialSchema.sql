@@ -4,8 +4,8 @@ CREATE TABLE IF NOT EXISTS question
 	title VARCHAR(32) NOT NULL,
 	body VARCHAR(64) NOT NULL,
 	author VARCHAR(32) NOT NULL,
-	creationdate VARCHAR(30) NOT NULL
-	
+	creationdate VARCHAR(30) NOT NULL,
+	score int	
 );
 
 CREATE TABLE IF NOT EXISTS answers
@@ -24,6 +24,24 @@ CREATE TABLE IF NOT EXISTS users
 	username VARCHAR(32) NOT NULL,
 	password VARCHAR(64) NOT NULL
 	
+);
+
+CREATE TABLE IF NOT EXISTS qvotes
+(
+	voteid serial PRIMARY KEY,
+	questionid int NOT NULL,
+	author VARCHAR(32) NOT NULL,
+	score int,
+	vote_type int
+);
+
+CREATE TABLE IF NOT EXISTS avotes
+(
+	voteid serial PRIMARY KEY,
+	answerid int NOT NULL,
+	author VARCHAR(32) NOT NULL,
+	score int,
+	vote_type int
 );
 
 CREATE TABLE IF NOT EXISTS tags

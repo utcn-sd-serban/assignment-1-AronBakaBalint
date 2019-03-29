@@ -196,4 +196,28 @@ public class JdbcQuestionRepository implements QuestionRepository {
 				newText, answerid);
 		
 	}
+
+	@Override
+	public void upVoteAnswer(String username, int answerid) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void downVoteAnswer(String username, int answerid) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void upVoteQuestion(String username, int answerid) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void downVoteQuestion(String username, int answerid) {
+		// TODO Auto-generated method stub
+		
+	}
 }

@@ -1,7 +1,10 @@
 package ro.utcn.aron.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Question implements Comparable {
 
@@ -13,6 +16,9 @@ public class Question implements Comparable {
 	private String author;
 	private String creationDate;
 	private List<Answer> answers = new ArrayList<>();
+	
+	//user and +1 for upvote -1 for downvote
+	private Map<String, Integer> votes = new ConcurrentHashMap<>();
 	
 	public Question(int id, String title, String body, String tags, String author, String creationDate) {
 		this.id = id;
@@ -119,7 +125,7 @@ public class Question implements Comparable {
 	@Override
 	public String toString() {
 		String txt = id+"\n";
-		txt += title+"\n";
+		txt += score + "  " + title+"\n";
 		txt += body+"\n";
 		txt += author+"\n";
 		txt += creationDate.toString()+"\n";
@@ -146,13 +152,69 @@ public class Question implements Comparable {
 		return 0;
 	}
 	
-	public void upVote() {
+
+	public int getScore() {
+		return score;
+	}
+
+	public void setScore(int score) {
+		this.score = score;
+	}
+	
+	public void upVote(String user) {
+		if(user.equals(author)) {
+			System.out.println("You cannot vote your own question!");
+			return;
+		}
+		
+		if(votes.containsKey(user) && votes.get(user) == 1) {
+			System.out.println("You already upvoted this question!");
+			return;
+		}
+		
+		//if we change vote from -1 to +1 then 2 has to be added
+		if(votes.containsKey(user)) score++;
 		score++;
+		votes.put(user,1);
+			
 	}
 	
-	public void downVote() {
+	public void downVote(String user) {
+		if(user.equals(author)) {
+			System.out.println("You cannot vote your own anser!");
+			return;
+		}
+		
+		if(votes.containsKey(user) && votes.get(user) == -1) {
+			System.out.println("You already downvoted this answer!");
+			return;
+		}
+		
+		//if we change vote from +1 to -1 then 2 has to be subtracted
+		if(votes.containsKey(user)) score--;
 		score--;
+		votes.put(user,-1);
+		
 	}
 	
+	public void upVoteAnswer(String user, int answerid) {
+		answers.forEach(answer->{
+			if(answer.getId() == answerid)
+				answer.upVote(user);
+		});
+		
+		//sort answers based on their scores
+		Collections.sort(answers);
+	}
+	
+	public void downVoteAnswer(String user, int answerid) {
+		answers.forEach(answer->{
+			if(answer.getId() == answerid)
+				answer.downVote(user);
+		});
+		
+		//sort answers based on their scores
+		Collections.sort(answers);
+	}
 	
 }

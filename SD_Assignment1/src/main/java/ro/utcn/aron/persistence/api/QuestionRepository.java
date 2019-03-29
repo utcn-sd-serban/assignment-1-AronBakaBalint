@@ -26,4 +26,12 @@ public interface QuestionRepository {
 	List<Question> filterByTitle(String title);
 	
 	List<Question> filterByTag(String tag);
+	
+	void upVoteAnswer(String username, int answerid);
+	
+	void downVoteAnswer(String username, int answerid);
+	
+	void upVoteQuestion(String username, int questionid);
+	
+	void downVoteQuestion(String username, int questionid);
 }

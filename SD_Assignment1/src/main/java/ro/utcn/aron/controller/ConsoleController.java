@@ -39,13 +39,16 @@ public class ConsoleController implements CommandLineRunner {
 			while (!okPassword) {
 				try {
 					user = handleUsernameAndPassword();
-					if(!user.equals("")) okPassword = true;
+					if(!user.equals("")) {
+						okPassword = true;
+						print("Welcome to StackOverflow, "+user+"!");
+					}
 					if(okPassword == false)
 						System.out.println("Wrong username or password");
 				} catch(Exception e) {
 					System.out.println("Wrong username or password");
 				}
-				print("Welcome to StackOverflow, "+user+"!");
+				
 			}
 			
 			print("Enter command: ");
@@ -97,6 +100,12 @@ public class ConsoleController implements CommandLineRunner {
 			return false;
 		case "editanswer":
 			handleEditAnswer(user);
+			return false;
+		case "voteanswer":
+			handleVoteAnswer(user);
+			return false;
+		case "votequestion":
+			handleVoteQuestion(user);
 			return false;
 		case "exit":
 			return true;
@@ -189,6 +198,30 @@ public class ConsoleController implements CommandLineRunner {
 		String text = scanner.nextLine().trim();
 		
 		questionManagementService.editAnswer(user, id, text);
+	}
+	
+	private void handleVoteAnswer(String user) {
+		print("answer id:");
+		int answerid = scanner.nextInt();
+		print("vote type:");
+		int type = scanner.nextInt();
+		
+		if(type < 0)
+			questionManagementService.downVoteAnswer(user, answerid);
+		else
+			questionManagementService.upVoteAnswer(user, answerid);
+	}
+	
+	private void handleVoteQuestion(String user) {
+		print("question id:");
+		int questionid = scanner.nextInt();
+		print("vote type:");
+		int type = scanner.nextInt();
+		
+		if(type < 0)
+			questionManagementService.downVoteQuestion(user, questionid);
+		else
+			questionManagementService.upVoteQuestion(user, questionid);
 	}
 
 	private void print(String s) {
